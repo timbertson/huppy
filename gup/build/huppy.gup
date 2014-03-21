@@ -1,0 +1,9 @@
+#!bash -eu
+build="${BUILDDIR:-.}"
+src="$(cd "${SRCDIR:-..}"; pwd)"
+
+cd "$build"
+
+gup -u "$src/"*.ml
+cp "$src/"*.ml ./
+ocamlopt -o "$1" unix.cmxa ./*.ml

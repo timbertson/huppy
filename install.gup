@@ -1,0 +1,9 @@
+#!bash -eu
+exe="${BUILDDIR:-build}/huppy"
+bin="${DISTDIR}/bin"
+
+gup -u "$exe"
+mkdir -p "$bin"
+cp "$exe" "$bin/"
+
+
