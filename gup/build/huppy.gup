@@ -1,8 +1,6 @@
-#!bash -eu
-build="${BUILDDIR:-.}"
-src="$(cd "${SRCDIR:-..}"; pwd)"
-
-cd "$build"
+#!/bin/bash
+set -eu
+src=".."
 
 gup -u "$src/"*.ml
 cp "$src/"*.ml ./

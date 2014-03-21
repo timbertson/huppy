@@ -1,0 +1,2 @@
+#!bash -eu
+0install run http://gfxmonk.net/dist/0install/0local.xml huppy.xml.template "$1"

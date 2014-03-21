@@ -1,0 +1,2 @@
+#!bash -eu
+gup 0inst/huppy.bin.xml
