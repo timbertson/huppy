@@ -1,5 +1,5 @@
 #!bash -eu
-exe="build/huppy"
+exe="_build/huppy.native"
 bin="${DISTDIR}/bin"
 
 gup -u "$exe"

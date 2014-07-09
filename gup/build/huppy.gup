@@ -1,7 +1,0 @@
-#!/bin/bash
-set -eu
-src=".."
-
-gup -u "$src/"*.ml
-cp "$src/"*.ml ./
-ocamlopt -o "$1" unix.cmxa ./*.ml

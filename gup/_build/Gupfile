@@ -1,0 +1,4 @@
+./ocamlbuild:
+	huppy.native
+	huppy.byte
+

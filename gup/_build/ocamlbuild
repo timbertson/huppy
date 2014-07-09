@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -eu
+cd ..
+ocamlbuild -no-links -build-dir "_build" -use-ocamlfind "$2"
