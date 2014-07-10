@@ -29,7 +29,7 @@ If you have [ZeroInstall](http://0install.net) (you should!), it's just:
 Otherwise, you'll need to get the dependencies yourself
 ([gup](https://github.com/gfxmonk/gup/) and ocaml), and then:
 
-	$ # compile into _build/huppy.native
+	$ # compile into bin/huppy
 	$ gup
 	
 	$ # install (optional)

@@ -64,7 +64,7 @@ let () =
 			killing := true;
 			begin match !child_group with
 				| Some grp -> (
-					log ("killing " ^ (string_of_int grp));
+					log ("Killing " ^ (string_of_int grp));
 					Unix.kill grp sigint;
 					wait_child ();
 				)
@@ -90,6 +90,8 @@ let () =
 		match Unix.fork () with
 			| 0 -> (
 					ExtUnix.setpgid 0 0;
+					(* don't let child mess with `stdin` *)
+					if respond_to_input then close_in stdin;
 					Unix.execvp !cmd !args
 				)
 			| pid ->
@@ -106,11 +108,16 @@ let () =
 
 	try
 		while true do
-			ignore (input_line stdin);
-			if (respond_to_input) then (
-				handle ();
-			);
+			begin try
+				ignore (input_line stdin);
+				if respond_to_input then handle ()
+			with Sys_blocked_io as e -> (
+				(* this can happen when a child makes stdin non-blocking *)
+				if respond_to_input then raise e
+				else Unix.sleep 1000 (* just wait for HUP *)
+			) end;
 			while !hupped do
+				log "hupped!";
 				run false
 			done
 		done

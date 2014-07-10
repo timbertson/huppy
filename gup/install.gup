@@ -1,9 +1,7 @@
 #!bash -eu
-exe="_build/huppy.native"
 bin="${DISTDIR}/bin"
 
-gup -u "$exe"
+gup -u bin/all
 mkdir -p "$bin"
-cp "$exe" "$bin/"
-
+cp bin/* "$bin/"
 

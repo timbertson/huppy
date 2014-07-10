@@ -1,5 +1,9 @@
 #!/bin/bash
 
 set -eu
+gup --always
+here="$(pwd)"
 cd ..
-ocamlbuild -no-links -build-dir "_build" -use-ocamlfind "$2"
+ocamlbuild -no-links -use-ocamlfind "$2"
+cd "$here"
+touch "$2"

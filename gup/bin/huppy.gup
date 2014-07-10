@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+target="../_build/huppy.native"
+gup -u "$target"
+gup --contents "$target"
+cp "$target" "$1"
