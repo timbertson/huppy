@@ -46,22 +46,10 @@ Otherwise, you'll need to get the dependencies yourself
 		<command compile:dup-src="true" name="compile">
 			<requires interface="http://gfxmonk.net/dist/0install/ocaml.xml"/>
 			<requires interface="http://gfxmonk.net/dist/0install/ocaml-findlib.xml"/>
-			<requires interface="../ocaml-extunix-dev-0.1.1.xml">
-				<executable-in-var command="build" name="BUILD_DEP_extunix"/>
-			</requires>
-			<requires interface="http://gfxmonk.net/dist/0install/gup.xml">
-				<executable-in-var name="gup"/>
-			</requires>
-			<runner interface="http://repo.roscidus.com/utils/bash"/>
-			<arg>-euxc</arg>
-			<arg>
-				cd "$BUILDDIR"
-				mkdir -p deps/_build/extunix
-				BUILDDIR="$$PWD/deps/_build/extunix" DISTDIR="$$PWD/deps" "$BUILD_DEP_extunix"
-				tree deps
-				export OCAMLPATH="$BUILDDIR/deps"
-				$gup "$BUILDDIR/install"
-			</arg>
+			<requires interface="http://gfxmonk.net/dist/0install/ocaml-extunix.xml"/>
+			<runner interface="http://gfxmonk.net/dist/0install/gup.xml">
+				<arg>$BUILDDIR/install</arg>
+			</runner>
 			<compile:implementation>
 				<environment insert="bin" mode="prepend" name="PATH"/>
 				<command name="run" path="bin/huppy"/>

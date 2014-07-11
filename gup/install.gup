@@ -1,4 +1,4 @@
-#!bash -eu
+#!bash -eux
 bin="${DISTDIR}/bin"
 
 gup -u bin/all
