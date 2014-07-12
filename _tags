@@ -1,1 +1,2 @@
 true: package(unix,extunix)
+"deps" or "0inst": not_hygienic

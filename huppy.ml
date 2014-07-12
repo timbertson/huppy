@@ -8,6 +8,8 @@ let shift ?(store:'a ref option) (arr:'a array) =
 
 let sleep sec = ignore (Unix.select [] [] [] sec)
 
+exception Failure of string
+
 let () =
 	let args = ref (shift Sys.argv) in
 	let cmd = ref !args.(0) in
@@ -51,7 +53,6 @@ let () =
 					done
 				with Unix.Unix_error (Unix.ESRCH, _, _) -> ();
 				(* log ("all processes dead"); *)
-				print_endline "";
 			)
 
 			| None -> ()
@@ -64,13 +65,14 @@ let () =
 			killing := true;
 			begin match !child_group with
 				| Some grp -> (
-					log ("Killing " ^ (string_of_int grp));
+					log ("Killing group " ^ (string_of_int grp));
 					Unix.kill grp sigint;
 					wait_child ();
 				)
 				| None -> ()
 			end;
-			killing := false
+			killing := false;
+			(* print_endline "kill done" *)
 		)
 	in
 
@@ -90,8 +92,6 @@ let () =
 		match Unix.fork () with
 			| 0 -> (
 					ExtUnix.setpgid 0 0;
-					(* don't let child mess with `stdin` *)
-					if respond_to_input then close_in stdin;
 					Unix.execvp !cmd !args
 				)
 			| pid ->
@@ -104,25 +104,68 @@ let () =
 	set_signal sigchld (Signal_handle child_died);
 	set_signal sigint (Signal_handle (fun _ -> cleanup (); exit 1));
 
+	if respond_to_input then Unix.set_close_on_exec Unix.stdin;
+
 	run true;
 
-	try
+	let ignore_eintr f a =
+		try f a with Unix.Unix_error (Unix.EINTR, _, _) -> ()
+	in
+
+	let stdin_loop action =
+		Unix.set_nonblock Unix.stdin;
+
+		let rec read_until_newline () =
+			let ch =
+				try Some (input_char stdin)
+				with
+					| Unix.Unix_error (Unix.EWOULDBLOCK, _, _)
+					| Unix.Unix_error (Unix.EAGAIN, _, _)
+					-> None
+			in
+			match ch with
+				| None -> false
+				| Some '\n' -> true
+				| Some _ -> read_until_newline ()
+		in
+
 		while true do
-			begin try
-				ignore (input_line stdin);
-				if respond_to_input then handle ()
-			with Sys_blocked_io as e -> (
-				(* this can happen when a child makes stdin non-blocking *)
-				if respond_to_input then raise e
-				else Unix.sleep 1000 (* just wait for HUP *)
-			) end;
-			while !hupped do
-				log "hupped!";
-				run false
-			done
+			ignore_eintr (fun () ->
+				let fd = Unix.stdin in
+				let readable, _, errored = Unix.select [fd] [] [fd] 1000.0 in
+				if errored <> [] then raise (Failure "error on stdin");
+				(* print_endline ("select done. there are " ^ *)
+				(* 	(string_of_int (List.length readable)) ^ " readables"); *)
+				if List.mem fd readable then
+					if read_until_newline () then
+						handle ()
+			) ();
+			action ()
 		done
+	in
+
+	let sleep_loop action =
+		while true do
+			ignore_eintr Unix.sleep 1000;
+			action ()
+		done
+	in
+
+	let do_run () =
+		while !hupped do
+			run false
+		done
+	in
+
+	try
+		stdin_loop do_run;
+		if respond_to_input
+			then stdin_loop do_run
+			else sleep_loop do_run
+		;
 	with e -> (
-		try cleanup () with _ -> ();
-		raise e
+		(* log ("ERRROR: " ^(Printexc.to_string e)); *)
+		(try cleanup () with _ -> ());
+		let () = raise e in ()
 	);
 	cleanup ()
