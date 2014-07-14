@@ -4,6 +4,6 @@ set -eu
 gup --always
 here="$(pwd)"
 cd ..
-ocamlbuild -no-links -use-ocamlfind "$2" -no-hygiene
+ocamlbuild -no-links -use-ocamlfind "$2"
 cd "$here"
 touch "$2"
