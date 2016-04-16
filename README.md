@@ -1,5 +1,7 @@
 # huppy
 
+<img src="http://gfxmonk.net/dist/status/project/huppy.png">
+
 Some servers and long-running processes restart themselves cleanly when they receive the `HUP` signal. But many don't. If yours doesn't, and you want a development-friendly way to restart your server, you should use `huppy`. It'll run your server (or other long-running process), and when you send it the `HUP` signal it'll kill and restart your process for you.
 
 Your process should terminate gracefully when it receives `SIGINT` (i.e `ctrl-c`). In particular, make sure you clean up any child processes, as huppy won't kill those.
