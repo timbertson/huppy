@@ -23,13 +23,7 @@ Your process should terminate gracefully when it receives `SIGINT` (i.e `ctrl-c`
 
 # Building & Installing
 
-If you have [ZeroInstall](http://0install.net) (you should!), it's just:
-
-	$ 0compile autocompile http://gfxmonk.net/dist/0install/huppy.xml
-	$ 0install add huppy   http://gfxmonk.net/dist/0install/huppy.xml
-
-Otherwise, you'll need to get the dependencies yourself
-([gup](https://github.com/gfxmonk/gup/) and ocaml), and then:
+Get the dependencies ([gup](https://github.com/gfxmonk/gup/) and ocaml), and then:
 
 	$ # compile into bin/huppy
 	$ gup
